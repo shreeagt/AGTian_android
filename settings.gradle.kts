@@ -13,5 +13,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "VideoStream"
+rootProject.name = "AGT-Supervisory"
 include(":app")
