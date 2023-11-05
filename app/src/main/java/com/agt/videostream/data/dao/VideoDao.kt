@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.Flow
 interface VideoDao {
 
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insertVideo(vararg videos : VideoData)
 
     @Query("UPDATE ${VideoData.VideoTable} SET  status=:status WHERE id =:videoId")

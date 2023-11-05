@@ -181,13 +181,13 @@ fun VideoScreen(
                         onApproveOrShortList = {
                             if (isShortListed) {
                                 viewModel.onApprove(it)
-                                if (approveVideoCount == 0) {
+                             /*   if (approveVideoCount == 0) {
                                     alertMsg =
-                                        "Approved! Your can approve one more video the rest will be rejected automatically . Thanks for your amazing contribution!"
+                                        "Approved! Your can approve one mo re video the rest will be rejected automatically . Thanks for your amazing contribution!"
                                 } else if (approveVideoCount == 1) {
-                                    alertMsg =
-                                        "Approved! Your have approve two videos, rest is rejected automatically . Thanks for your amazing contribution!"
-                                }
+                                }*/
+                                alertMsg =
+                                    "Approved! Your have approve the video, rest is rejected automatically . Thanks for your amazing contribution!"
                                 dialougVisibility = true
                             } else {
                                 viewModel.shortList(it)

@@ -57,6 +57,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavController
 import com.agt.videostream.R
 import com.agt.videostream.data.VideoData
+import com.agt.videostream.ui.component.VideoDialouge
 import com.agt.videostream.ui.navigation.Screen
 import kotlinx.coroutines.launch
 
@@ -77,7 +78,7 @@ fun DashBoardScreen(
     var isRejectExtend by remember { mutableStateOf(false) }
     var isSortListExpand by remember { mutableStateOf(false) }
     val totalApprove by viewModel.totalApproveVideo.collectAsState()
-
+    val isDialogeShow by viewModel.isDialogeShow.collectAsState()
     LaunchedEffect(key1 = true) {
         launch {
             viewModel.message.collect {
@@ -144,6 +145,11 @@ fun DashBoardScreen(
 
             }
 
+            AnimatedVisibility(visible = isDialogeShow) {
+                VideoDialouge(msg = "you can only approve one video from shortlist rest will be reject automatically") {
+                    viewModel.hideDialoge()
+                }
+            }
 
             Column(
                 modifier = Modifier
@@ -237,6 +243,9 @@ fun DashBoardScreen(
 
                 Spacer(modifier = Modifier.height(10.dp))
                 Card(modifier = Modifier.clickable {
+                    if(sortlistVideo.isNotEmpty() && !isSortListExpand){
+                        viewModel.showDialoge()
+                    }
                     isSortListExpand = isSortListExpand.not()
                 }) {
                     Row(

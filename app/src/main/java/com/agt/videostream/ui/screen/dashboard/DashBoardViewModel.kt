@@ -34,22 +34,24 @@ class DashBoardViewModel @Inject constructor(
     val shortList = MutableStateFlow<List<VideoData>>(emptyList())
     val rejectVideo = MutableStateFlow<List<VideoData>>(emptyList())
     val totalApproveVideo = MutableStateFlow<Int>(0)
+    val isDialogeShow = MutableStateFlow(false)
 
     init {
         getAllVideo()
     }
 
+    fun showDialoge() = viewModelScope.launch {
+        isDialogeShow.emit(true)
+    }
+    fun hideDialoge()= viewModelScope.launch {
+        isDialogeShow.emit(false)
+    }
+
     fun getAllVideo() = viewModelScope.launch(Dispatchers.IO) {
         val videos = dataBase.getDao().getAllvideo()
         if (videos.isNotEmpty()) {
-            allVideos.emit(videos)
-            videoList.emit(videos.filter { it.shortListed == VideoData.ShorList.FALSE.value || it.shortListed == VideoData.ShorList.NONE.value && it.status == VideoData.VideoStatus.ALL.value })
-            shortList.emit(videos.filter { it.shortListed == VideoData.ShorList.TRUE.value && it.status == VideoData.VideoStatus.ALL.value })
-            rejectVideo.emit(videos.filter { it.status == VideoData.VideoStatus.REJECT.value })
-            approveVideo.emit(videos.filter { it.status == VideoData.VideoStatus.APPROVE.value })
-            totalApproveVideo.emit(videos.filter { it.status == VideoData.VideoStatus.APPROVE.value }.size)
+            filterVideo(videos)
             _isLoading.emit(false)
-            return@launch
         }
         api.getVideo(preference.getUserId() ?: "").request { responce ->
             _isLoading.tryEmit(false)
@@ -69,14 +71,26 @@ class DashBoardViewModel @Inject constructor(
                         dataBase.getDao().insertVideo(*videodata.toTypedArray())
                     }
                     run {
-                        videoList.tryEmit(videodata)
-                        shortList.tryEmit(videodata.filter { it.status == VideoData.VideoStatus.APPROVE.value })
-                        rejectVideo.tryEmit(videodata.filter { it.status == VideoData.VideoStatus.REJECT.value })
+//                        videoList.tryEmit(videodata)
+//                        shortList.tryEmit(videodata.filter { it.status == VideoData.VideoStatus.APPROVE.value })
+//                        rejectVideo.tryEmit(videodata.filter { it.status == VideoData.VideoStatus.REJECT.value })
+                        filterVideo(videos)
                     }
 
                 }
             }
         }
+    }
+
+
+    fun filterVideo(videos: List<VideoData>) = viewModelScope.launch {
+        allVideos.emit(videos)
+        videoList.emit(videos.filter { it.shortListed == VideoData.ShorList.FALSE.value || it.shortListed == VideoData.ShorList.NONE.value && it.status == VideoData.VideoStatus.ALL.value })
+        shortList.emit(videos.filter { it.shortListed == VideoData.ShorList.TRUE.value && it.status == VideoData.VideoStatus.ALL.value })
+        rejectVideo.emit(videos.filter { it.status == VideoData.VideoStatus.REJECT.value })
+        approveVideo.emit(videos.filter { it.status == VideoData.VideoStatus.APPROVE.value })
+        totalApproveVideo.emit(videos.filter { it.status == VideoData.VideoStatus.APPROVE.value }.size)
+        _isLoading.emit(false)
     }
 
     fun setMessage(msg: String) = viewModelScope.launch {

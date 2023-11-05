@@ -68,12 +68,12 @@ class VideoViewModel @Inject constructor(
     fun onApprove(videoId: Int) = viewModelScope.launch(Dispatchers.IO) {
         api.approveVideo(videoId, userPreference.getUserId()!!).awaitResponse()
         database.getDao().updateStatus(VideoData.VideoStatus.APPROVE.value, videoId)
-        if (totalApproveVideo.value == 1) {
+//        if (totalApproveVideo.value == 1) {
             val restVideo = allvideo.value.filter { it.status == VideoData.VideoStatus.ALL.value && it.id != videoId}
             restVideo.forEach {
                 onReject(it.id)
             }
-        }
+//        }
     }
 
     fun onReject(videoId: Int) = viewModelScope.launch(Dispatchers.IO) {
